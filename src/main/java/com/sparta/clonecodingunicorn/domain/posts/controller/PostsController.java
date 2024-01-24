@@ -36,14 +36,14 @@ public class PostsController {
     @GetMapping("/category")
     public ResponseEntity<List<Object>> getPostsByCategory(
             @RequestParam("category") String category,
-            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "page", defaultValue = "1", required = false) int page,
             @RequestParam(name = "size", defaultValue = "12") int size,
             @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
             @RequestParam(name = "isAsc", defaultValue = "true") boolean isAsc) {
 
         List<Object> postsResponseDtoList = postsService.getPostsByCategory(
                 category,
-                page,
+                page - 1,
                 size,
                 sortBy,
                 isAsc

@@ -50,10 +50,11 @@ public class MemberController {
 
     // 2-2. case 2) kakao 로그인
     @GetMapping("/kakao/callback")
-    public String kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
+    public ResponseEntity<String> kakaoLogin(@RequestParam String code, HttpServletResponse response) throws JsonProcessingException {
         String token = kakaoService.kakaoLogin(code);
         String tokenValue = token.substring(7);
-        jwtUtil.addJwtToHeader(tokenValue, response);
-        return "redirect:/";
+//        jwtUtil.addJwtToHeader(tokenValue, response);
+        jwtUtil.addJwtToCookie(tokenValue,response);
+        return ResponseEntity.ok("로그인이 완료되었습니다.");
     }
 }
