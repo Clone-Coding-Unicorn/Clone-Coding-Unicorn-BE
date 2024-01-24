@@ -1,15 +1,16 @@
 package com.sparta.clonecodingunicorn.domain.post.dto;
 
-import com.sparta.clonecodingunicorn.domain.post.entity.Category;
 import lombok.Getter;
+
+import java.time.LocalDate;
 
 @Getter
 public class PostRequestDto {
     private String title;
     private String contents;
-    private String date;
+    private LocalDate date;
     private String imageUrl;
-    private Category category;
+    private String category;
 
     public void setTitle(String title) {
         this.title = title;
@@ -18,14 +19,14 @@ public class PostRequestDto {
     public void setContents(String contents) {
         this.contents = contents;
     }
-    public void setDate(String date) {
+    public void setDate(LocalDate date) {
         this.date=date;
     }
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 

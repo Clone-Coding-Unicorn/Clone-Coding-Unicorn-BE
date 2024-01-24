@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
@@ -19,34 +21,29 @@ public class Post {
     @Column
     private String title;
 
-    @Column
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String contents;
 
     @Column
-    private String date;
+    private LocalDate date;
 
     @Column
     private String imageUrl;
 
-    @Enumerated(EnumType.STRING)
     @Column
-    private Category category;
+    private String category;
 
 
-    public Post(PostRequestDto requestDto) {
-        this.title = requestDto.getTitle();
-        this.contents = requestDto.getContents();
-        this.imageUrl = requestDto.getImageUrl();
-        this.category = requestDto.getCategory();
+
+    public Post(String newsTitle, String contents, String firstImageUrl, LocalDate newsDate, String dbCategory) {
+        this.title=newsTitle;
+        this.contents=contents;
+        this.date=newsDate;
+        this.imageUrl=firstImageUrl;
+        this.category=dbCategory;
     }
 
-    public Post(String title, String contents, String imageUrl, String date, Category category) {
-        this.title = title;
-        this.contents = contents;
-        this.date = date;
-        this.imageUrl = imageUrl;
-        this.category = category;
-    }
 
     public Post updatePost(PostRequestDto requestDto) {
         this.title = requestDto.getTitle();

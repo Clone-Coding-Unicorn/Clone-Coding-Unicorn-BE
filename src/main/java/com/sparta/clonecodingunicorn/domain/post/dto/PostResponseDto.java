@@ -1,17 +1,18 @@
 package com.sparta.clonecodingunicorn.domain.post.dto;
 
-import com.sparta.clonecodingunicorn.domain.post.entity.Category;
 import com.sparta.clonecodingunicorn.domain.post.entity.Post;
 import lombok.Getter;
+
+import java.time.LocalDate;
 
 @Getter
 public class PostResponseDto {
     private Long postId;
     private String title;
     private String contents;
-    private String date;
+    private LocalDate date;
     private String imageUrl;
-    private Category category;
+    private String category;
 
     public PostResponseDto(Post post) {
         this.postId = post.getPostId();

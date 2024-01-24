@@ -2,7 +2,6 @@ package com.sparta.clonecodingunicorn.domain.post.controller;
 
 import com.sparta.clonecodingunicorn.domain.post.dto.PostRequestDto;
 import com.sparta.clonecodingunicorn.domain.post.dto.PostResponseDto;
-import com.sparta.clonecodingunicorn.domain.post.entity.Category;
 import com.sparta.clonecodingunicorn.domain.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -43,34 +42,30 @@ public class PostController {
 
     @PutMapping("/{postId}") // 포스트 수정
     public ResponseEntity<PostResponseDto> updatePost(@RequestBody @Valid PostRequestDto requestDto, @PathVariable Long postId) {
-        PostResponseDto responseDto =postService.updatePost(requestDto, postId);
+        PostResponseDto responseDto = postService.updatePost(requestDto, postId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @DeleteMapping("/{postId}") //포스트 삭제
-    public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long postId){
-        PostResponseDto responseDto =postService.deletePost(postId);
+    public ResponseEntity<PostResponseDto> deletePost(@PathVariable Long postId) {
+        PostResponseDto responseDto = postService.deletePost(postId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
     @GetMapping("/categories") //카테고리별 포스트 조회
-    public ResponseEntity<List<PostResponseDto>> getSortedPostList(@RequestParam(name = "category") Category category) {
+    public ResponseEntity<List<PostResponseDto>> getSortedPostList(@RequestParam(name = "category") String category) {
         List<PostResponseDto> responseList = postService.getSortedPostList(category);
         return ResponseEntity.status(HttpStatus.OK).body(responseList);
     }
 
-    @GetMapping("/scrapeNaverNews")
-    public String scrapeNaverNews() throws IOException {
-        postService.scrapeNaverNews("정치");
-        postService.scrapeNaverNews("경제");
-        postService.scrapeNaverNews("세계");
-        postService.scrapeNaverNews("테크");
-        postService.scrapeNaverNews("노동");
-        postService.scrapeNaverNews("환경");
-        postService.scrapeNaverNews("인권");
-        postService.scrapeNaverNews("사회");
-        postService.scrapeNaverNews("문화");
-        postService.scrapeNaverNews("라이프");
-        return "Scraping in progress. Check console for details.";
+    @GetMapping("/run")
+    public ResponseEntity<String> runCrawling() {
+        try {
+            postService.runCrawling();
+            return ResponseEntity.ok("크롤링이 성공적으로 실행되었습니다.");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("크롤링 중 오류가 발생했습니다.");
+        }
     }
-
 }
