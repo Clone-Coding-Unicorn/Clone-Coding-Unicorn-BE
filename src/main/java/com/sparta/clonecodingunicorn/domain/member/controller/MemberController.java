@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 
 @RequestMapping("/api")
-@CrossOrigin(origins = {"http://localhost:3000","https://clone-coding-unicorn-fe.vercel.app"})
+@CrossOrigin(origins = {"http://localhost:3000","https://www.neeks.shop"})
 public class MemberController {
     private final MemberService memberService;
     private final KakaoService kakaoService;
