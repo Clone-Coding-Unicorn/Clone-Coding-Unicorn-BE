@@ -7,7 +7,10 @@ import com.sparta.clonecodingunicorn.domain.member.dto.KakaoMemberInfoDto;
 import com.sparta.clonecodingunicorn.domain.member.entity.Member;
 import com.sparta.clonecodingunicorn.domain.member.repository.MemberRepository;
 import com.sparta.clonecodingunicorn.global.jwt.JwtUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +27,6 @@ import java.util.UUID;
 @Slf4j(topic = "[kakao 로그인]")
 @Service
 public class KakaoService {
-
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final RestTemplate restTemplate;
@@ -37,17 +39,24 @@ public class KakaoService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String kakaoLogin(String code) throws JsonProcessingException {
+    @Value("${kakao.rest.api.key}")
+    private String restApiKey;
+    @Value("${kakao.redirect.uri.test}")
+    private String redirectUrl;
+
+    public ResponseEntity<String> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
         // 1. 인증 코드로 kakao 서버에 토큰 전달
         String accessToken = getToken(code);
-
         // 2. kakao 서버로부터 받은 토큰으로 API 호출(사용자 정보 요청)
         KakaoMemberInfoDto kakaoMemberInfo = getKakaoMemberInfo(accessToken);
-
         // 3. 필요에 따라 회원가입 진행 -> JWT 토큰 반환
         Member kakaoMember = registerKakaoMemberIfNeeded(kakaoMemberInfo);
         String token = jwtUtil.createToken(kakaoMember.getName());
-        return token;
+        String tokenValue = token.substring(7);
+        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return ResponseEntity.status(201).body("kakao 로그인이 완료되었습니다.");
     }
 
     // 1. 인증 코드로 kakao 서버에 토큰 전달
@@ -67,9 +76,9 @@ public class KakaoService {
         // 1-3. HTTP body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "671600df764bdd2a2198446875a85121"); // REST API 키 삽입
-        body.add("redirect_uri", "https://lyriczen.store/api/kakao/callback"); // Redirect URI 삽입
-        body.add("code", code); // 인증 코드 삽입
+        body.add("client_id", restApiKey);
+        body.add("redirect_uri", redirectUrl);
+        body.add("code", code);
 
         RequestEntity<MultiValueMap<String, String>> requestEntity = RequestEntity
                 .post(uri)
@@ -140,7 +149,7 @@ public class KakaoService {
                 String password = UUID.randomUUID().toString();
                 String encodedPassword = passwordEncoder.encode(password);
                 String email = kakaoMemberInfo.getEmail();
-                String name = kakaoMemberInfo.getNickname();
+                String name = kakaoMemberInfo.getName();
                 kakaoMember = new Member(email, encodedPassword, name, kakaoId);
             }
             memberRepository.save(kakaoMember);

@@ -46,7 +46,11 @@ public class Member {
     @Column
     private Boolean subscribeAgree;
 
+    @Column
     private Long kakaoId;
+
+    @Column
+    private String googleId;
 
     @Builder
     public Member(Long memberId, String email, String password, String name, Integer birthYear, String gender, String emoji, String job, String interestArea, Boolean deleteMember, Boolean subscribeAgree) {
@@ -76,8 +80,20 @@ public class Member {
         this.kakaoId = kakaoId;
     }
 
+    public Member(String email, String encryptedPassword, String name, String googleId) {
+        this.email = email;
+        this.password = encryptedPassword;
+        this.name = name;
+        this.googleId = googleId;
+    }
+
     public Member kakaoIdUpdate(Long kakaoId) {
         this.kakaoId = kakaoId;
+        return this;
+    }
+
+    public Member googleIdUpdate(String googleId) {
+        this.googleId = googleId;
         return this;
     }
 }
