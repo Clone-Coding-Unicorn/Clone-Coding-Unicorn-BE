@@ -19,7 +19,7 @@ public class CrawlController {
         this.scheduler = scheduler;
     }
 
-    @GetMapping("/run")
+    @GetMapping("/run") // 뉴스 크롤링
     public ResponseEntity<String> runCrawling() {
         try {
             scheduler.runCrawling();

@@ -67,46 +67,6 @@ public class PostsService {
         return response;
     }
 
-    public List<Object> searchPosts(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-
-        List<Posts> postsListByCategory = postsRepository.fullTextSearchNewsByKeyWordNativeVer(
-                "+" + keyword + "*",
-                pageable.getPageSize(),
-                (int) pageable.getOffset()
-        );
-
-        List<Object> response = new ArrayList<>();
-        List<PostsResponseDto> postsResponseDtoList = postsListByCategory.stream()
-                .map(PostsResponseDto::new)
-                .collect(Collectors.toList());
-
-        int totalNewsCount = postsRepository.countSearchNewsByKeyWordNativeVer("+" + keyword + "*");
-        int totalPages = (int) Math.ceil((double) totalNewsCount / size);
-        response.add(totalPages);
-        response.add(postsResponseDtoList);
-
-        return response;
-    }
-
-    public List<Object> searchPostsBasic(String keyword, int page, int size, String sortBy, boolean isAsc) {
-        // 검색 시간 테스트를 위한 코드입니다.
-        Sort.Direction direction = isAsc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        Page<Posts> searchNewsByKeyWord = postsRepository.searchNewsByKeyWord(keyword, pageable);
-
-        List<Object> response = new ArrayList<>();
-        List<PostsResponseDto> postsResponseDtoList = searchNewsByKeyWord.stream()
-                .map(PostsResponseDto::new)
-                .collect(Collectors.toList());
-
-        response.add(searchNewsByKeyWord.getTotalPages());
-        response.add(postsResponseDtoList);
-
-        return response;
-    }
 
     public PostsDetailsResponseDto getPostsDetails(Long postId) {
 
