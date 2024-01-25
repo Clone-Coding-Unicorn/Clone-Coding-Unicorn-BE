@@ -53,7 +53,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String email = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
         // 로그인 성공 시 JWT 토큰 생성
         String token = jwtUtil.createToken(email);
-        LoginSuccessResponseDto loginSuccessResponseDto = new LoginSuccessResponseDto(token);
+        String valueToken = token.substring(7);
+        LoginSuccessResponseDto loginSuccessResponseDto = new LoginSuccessResponseDto(valueToken);
         // JWT 토큰을 Cookie에 추가
         jwtUtil.addJwtToCookie(token, response);
 
