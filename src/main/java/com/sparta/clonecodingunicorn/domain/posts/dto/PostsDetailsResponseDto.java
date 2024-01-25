@@ -18,14 +18,11 @@ public class PostsDetailsResponseDto {
 
     private String imageUrl;
 
-    private int heart;
-
     public PostsDetailsResponseDto(Posts posts) {
         this.title = posts.getTitle();
         this.contents = posts.getContents();
         this.date = posts.getDate();
         this.category = posts.getCategory();
         this.imageUrl = posts.getImageUrl();
-        this.heart = posts.getHeartCount();
     }
 }

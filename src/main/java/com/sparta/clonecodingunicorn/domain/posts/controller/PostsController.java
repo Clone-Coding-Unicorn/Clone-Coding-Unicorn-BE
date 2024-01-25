@@ -17,14 +17,15 @@ public class PostsController {
 
     private final PostsService postsService;
 
-    @GetMapping()
+    //
+    @GetMapping() // 전체 뉴스 조회
     public ResponseEntity<List<Object>> getPosts(@RequestParam(name = "page", defaultValue = "1") int page,
                                                  @RequestParam(name = "size", defaultValue = "12") int size,
                                                  @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
                                                  @RequestParam(name = "isAsc", defaultValue = "true") boolean isAsc) {
 
         List<Object> postsResponseDtoList = postsService.getPosts(
-                page,
+                page-1,
                 size,
                 sortBy,
                 isAsc
@@ -33,7 +34,7 @@ public class PostsController {
         return ResponseEntity.ok(postsResponseDtoList);
     }
 
-    @GetMapping("/category")
+    @GetMapping("/category") // 카테고리별 뉴스 조회
     public ResponseEntity<List<Object>> getPostsByCategory(
             @RequestParam("category") String category,
             @RequestParam(name = "page", defaultValue = "1", required = false) int page,
@@ -43,7 +44,8 @@ public class PostsController {
 
         List<Object> postsResponseDtoList = postsService.getPostsByCategory(
                 category,
-                page - 1,
+
+                page-1,
                 size,
                 sortBy,
                 isAsc
@@ -52,41 +54,8 @@ public class PostsController {
         return ResponseEntity.ok(postsResponseDtoList);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Object>> searchPosts(
-            @RequestParam("keyword") String keyword,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "12") int size) {
 
-        List<Object> postsResponseDtoList = postsService.searchPosts(
-                keyword,
-                page,
-                size
-        );
-
-        return ResponseEntity.ok(postsResponseDtoList);
-    }
-
-    @GetMapping("/search/basic")
-    public ResponseEntity<List<Object>> searchPostsBasic(
-            @RequestParam("keyword") String keyword,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "12") int size,
-            @RequestParam(name = "sortBy", defaultValue = "createdDate") String sortBy,
-            @RequestParam(name = "isAsc", defaultValue = "true") boolean isAsc) {
-
-        List<Object> postsResponseDtoList = postsService.searchPostsBasic(
-                keyword,
-                page,
-                size,
-                sortBy,
-                isAsc
-        );
-
-        return ResponseEntity.ok(postsResponseDtoList);
-    }
-
-    @GetMapping("/{postId}")
+    @GetMapping("/{postId}") // 뉴스 상세페이지 조회
     public ResponseEntity<PostsDetailsResponseDto> getPostsDetails(@PathVariable Long postId) {
         PostsDetailsResponseDto postsDetails = postsService.getPostsDetails(postId);
 
