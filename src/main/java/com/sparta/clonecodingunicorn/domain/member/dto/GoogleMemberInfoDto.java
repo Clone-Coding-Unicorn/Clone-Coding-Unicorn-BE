@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KakaoMemberInfoDto {
-    private Long id;
+public class GoogleMemberInfoDto {
+    private String id;
     private String name;
     private String email;
 
-    public KakaoMemberInfoDto(Long id, String name, String email) {
+    public GoogleMemberInfoDto(String id, String name, String email) {
         this.id = id;
         this.name = name;
         this.email = email;
