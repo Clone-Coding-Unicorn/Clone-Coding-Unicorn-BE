@@ -3,6 +3,7 @@ package com.sparta.clonecodingunicorn.global.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.sparta.clonecodingunicorn.domain.member.dto.LoginRequestDto;
+import com.sparta.clonecodingunicorn.domain.member.dto.LoginSuccessResponseDto;
 import com.sparta.clonecodingunicorn.global.security.MemberDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -49,16 +50,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         log.info("로그인 성공 및 JWT 생성");
 
-        String username = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
+        String email = ((MemberDetailsImpl) authResult.getPrincipal()).getUsername();
         // 로그인 성공 시 JWT 토큰 생성
-        String token = jwtUtil.createToken(username);
-        String tokenValue = token.substring(7);
-        // JWT 토큰을 Header에 추가
-        jwtUtil.addJwtToHeader(tokenValue, response);
+        String token = jwtUtil.createToken(email);
+        LoginSuccessResponseDto loginSuccessResponseDto = new LoginSuccessResponseDto(token);
+        // JWT 토큰을 Cookie에 추가
+        jwtUtil.addJwtToCookie(token, response);
+
+        // JWT 토큰을 Header에 추가(기존)
+//        jwtUtil.addJwtToHeader(tokenValue, response);
+        response.getWriter().write(new ObjectMapper().writeValueAsString(loginSuccessResponseDto));
+        response.setStatus(200);
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        log.info(failed.getMessage());
+        log.info("로그인 실패 {}", failed.getMessage());
+
+        response.setStatus(401);
     }
 }
