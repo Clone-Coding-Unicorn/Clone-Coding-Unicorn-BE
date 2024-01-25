@@ -183,6 +183,11 @@ public class Scheduler {
                         element.remove();
                     }
 
+                    //비어 있는 게시글이 있다면 DB에 저장하지 않고 생략
+                    if (firstImageUrl.isEmpty()) {
+                        continue;
+                    }
+
                     Elements contents_html = texts;// 본문 내용을 가져옵니다.
                     String contents = contents_html.toString();
 
