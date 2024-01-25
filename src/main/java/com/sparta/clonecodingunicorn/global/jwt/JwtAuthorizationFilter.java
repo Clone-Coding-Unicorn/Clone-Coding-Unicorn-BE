@@ -33,7 +33,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
-        String tokenValue = jwtUtil.getTokenFromHeader(req);
+        //해더에서 가져오기(기존)
+//        String tokenValue = jwtUtil.getTokenFromHeader(req);
+        //쿠키에서 가져오기(수정)
+        String tokenValue = jwtUtil.getTokenFromRequest(req);
         if (StringUtils.hasText(tokenValue)) {
             log.info(tokenValue);
 

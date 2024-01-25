@@ -37,9 +37,6 @@ public class Posts extends Timestamped {
     @Column(columnDefinition = "TEXT")
     private String newsSummary;
 
-    @Column
-    private int heartCount;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_date")
     private Date createdDate;
@@ -53,13 +50,6 @@ public class Posts extends Timestamped {
         this.category = category;
         this.newsSummary = newsSummary;
 
-    }
-
-    public void increaseHeartCount() {
-        this.heartCount += 1;
-    }
-    public void decreaseHeartCount() {
-        this.heartCount -= 1;
     }
 
 }

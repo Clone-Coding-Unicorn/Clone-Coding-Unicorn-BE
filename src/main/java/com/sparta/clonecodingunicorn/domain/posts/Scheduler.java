@@ -23,7 +23,7 @@ import java.util.*;
 public class Scheduler {
 
     private final PostsRepository postsRepository;
-
+    private final Set<String> uniqueTitles = new HashSet<>();
     public void runCrawling() throws InterruptedException {
         log.info("크롤링을 직접 실행합니다.");
 
@@ -144,82 +144,83 @@ public class Scheduler {
             Collections.shuffle(todaysNewsLinkList);
 
             //오늘 올라온 기사 상세정보 저장
-            for(Category newsDetailsLinkPair : todaysNewsLinkList){
+            for(Category newsDetailsLinkPair : todaysNewsLinkList) {
 
                 Document newsDetails_doc = Jsoup.connect(newsDetailsLinkPair.getLink()).get();
 
                 String newsTitle = newsDetails_doc.select("#v-left-scroll-in > div.article_head > h1").text();
-                String newsSummary = newsDetails_doc.select("#v-left-scroll-in > div.article_con > div.con_left > div.article_summary").text();
+                //중복된 기사인지 확인
+                if (!uniqueTitles.contains(newsTitle)) {
+                    uniqueTitles.add(newsTitle);
+                    String newsSummary = newsDetails_doc.select("#v-left-scroll-in > div.article_con > div.con_left > div.article_summary").text();
 
-                Elements imageUrl = newsDetails_doc.select("div.article_view img");
-                Elements texts = newsDetails_doc.select("div.article_view");
-                Elements newsInfo = newsDetails_doc.select("div.article_info");
+                    Elements imageUrl = newsDetails_doc.select("div.article_view img");
+                    Elements texts = newsDetails_doc.select("div.article_view");
+                    Elements newsInfo = newsDetails_doc.select("div.article_info");
 
-                Element dateSpan = newsInfo.select("span.url_txt").get(1);
-                String date = dateSpan.text().substring(3,13);
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-                LocalDate newsDate = LocalDate.parse(date, formatter);
+                    Element dateSpan = newsInfo.select("span.url_txt").get(1);
+                    String date = dateSpan.text().substring(3, 13);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+                    LocalDate newsDate = LocalDate.parse(date, formatter);
 
-                String firstImageUrl = "";
-                if(imageUrl.first() != null) {
-                    firstImageUrl = imageUrl.first().absUrl("src");  // 첫 번째 이미지 URL을 가져옵니다.
-                }
+                    String firstImageUrl = "";
+                    if (imageUrl.first() != null) {
+                        firstImageUrl = imageUrl.first().absUrl("src");  // 첫 번째 이미지 URL을 가져옵니다.
+                    }
 
-                // 이미지와 관련된 모든 요소를 제거합니다.
-                Elements figureElements = newsDetails_doc.select("figure");
-                Elements imgElements = newsDetails_doc.select("img");
-                Elements scriptElements = newsDetails_doc.select("script");
+                    // 이미지와 관련된 모든 요소를 제거합니다.
+                    Elements figureElements = newsDetails_doc.select("figure");
+                    Elements imgElements = newsDetails_doc.select("img");
+                    Elements scriptElements = newsDetails_doc.select("script");
 
-                for (Element element : figureElements) {
-                    element.remove();
-                }
-                for (Element element : imgElements) {
-                    element.remove();
-                }
-                for (Element element : scriptElements) {
-                    element.remove();
-                }
+                    for (Element element : figureElements) {
+                        element.remove();
+                    }
+                    for (Element element : imgElements) {
+                        element.remove();
+                    }
+                    for (Element element : scriptElements) {
+                        element.remove();
+                    }
 
-                Elements contents_html = texts;// 본문 내용을 가져옵니다.
-                String contents = contents_html.toString();
+                    //비어 있는 게시글이 있다면 DB에 저장하지 않고 생략
+                    if (firstImageUrl.isEmpty()) {
+                        continue;
+                    }
 
-                String db_category = "";
+                    Elements contents_html = texts;// 본문 내용을 가져옵니다.
+                    String contents = contents_html.toString();
 
-                if(newsDetailsLinkPair.getCategory().equals("증권")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("부동산")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("경제 · 금융")){
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("산업")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("정치")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("사회")) {
-                    db_category = newsDetailsLinkPair.getCategory();
+                    String db_category = "";
 
-                }else if(newsDetailsLinkPair.getCategory().equals("국제")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("오피니언")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("문화 · 스포츠")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
-                else if(newsDetailsLinkPair.getCategory().equals("서경")) {
-                    db_category = newsDetailsLinkPair.getCategory();
-                }
+                    if (newsDetailsLinkPair.getCategory().equals("증권")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("부동산")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("경제 · 금융")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("산업")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("정치")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("사회")) {
+                        db_category = newsDetailsLinkPair.getCategory();
 
-                postsRepository.save(
-                        new Posts(newsTitle, contents, firstImageUrl,
-                                newsDate, db_category,newsSummary)
-                );
+                    } else if (newsDetailsLinkPair.getCategory().equals("국제")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("오피니언")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("문화 · 스포츠")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    } else if (newsDetailsLinkPair.getCategory().equals("서경")) {
+                        db_category = newsDetailsLinkPair.getCategory();
+                    }
+
+                    postsRepository.save(
+                            new Posts(newsTitle, contents, firstImageUrl,
+                                    newsDate, db_category, newsSummary)
+                    );
+                }
             }
 
         }catch (IOException e) {

@@ -12,7 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api")
+
+@RequestMapping("/api")
+@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001"})
 public class MemberController {
     private final MemberService memberService;
     private final KakaoService kakaoService;
