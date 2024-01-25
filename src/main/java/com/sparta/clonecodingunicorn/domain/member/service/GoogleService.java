@@ -46,7 +46,7 @@ public class GoogleService {
     @Value("${google.redirect.uri.test}")
     private String redirectUrl;
 
-    public ResponseEntity<String> googleLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public String googleLogin(String code) throws JsonProcessingException {
         // 1. 인증 코드로 구글 서버에 토큰 전달
         String accessToken = getGoogleToken(code);
         // 2. 구글 서버로부터 받은 토큰으로 API 호출(사용자 정보 요청)
@@ -54,11 +54,7 @@ public class GoogleService {
         // 3. 필요에 따라 회원가입 진행 -> JWT 토큰 반환
         Member googleMember = registerGoogleMemberIfNeeded(googleMemberInfo);
         String token = jwtUtil.createToken(googleMember.getName());
-        String tokenValue = token.substring(7);
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-        return ResponseEntity.status(201).body("Google 로그인이 완료되었습니다.");
+        return token;
     }
 
     // 1. 인증 코드로 구글 서버에 토큰 전달

@@ -44,19 +44,15 @@ public class KakaoService {
     @Value("${kakao.redirect.uri.test}")
     private String redirectUrl;
 
-    public ResponseEntity<String> kakaoLogin(String code, HttpServletResponse response) throws JsonProcessingException {
+    public String kakaoLogin(String code) throws JsonProcessingException {
         // 1. 인증 코드로 kakao 서버에 토큰 전달
         String accessToken = getToken(code);
         // 2. kakao 서버로부터 받은 토큰으로 API 호출(사용자 정보 요청)
         KakaoMemberInfoDto kakaoMemberInfo = getKakaoMemberInfo(accessToken);
         // 3. 필요에 따라 회원가입 진행 -> JWT 토큰 반환
-        Member kakaoMember = registerKakaoMemberIfNeeded(kakaoMemberInfo);
-        String token = jwtUtil.createToken(kakaoMember.getName());
-        String tokenValue = token.substring(7);
-        Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-        return ResponseEntity.status(201).body("kakao 로그인이 완료되었습니다.");
+        Member googleMember = registerKakaoMemberIfNeeded(kakaoMemberInfo);
+        String token = jwtUtil.createToken(googleMember.getName());
+        return token;
     }
 
     // 1. 인증 코드로 kakao 서버에 토큰 전달
