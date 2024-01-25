@@ -41,7 +41,7 @@ public class MemberController {
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return "redirect:/";
+        return "/redirect-to-neeks-shop";
     }
 
     // kakao 로그인
@@ -52,6 +52,6 @@ public class MemberController {
         Cookie cookie = new Cookie(JwtUtil.AUTHORIZATION_HEADER, tokenValue);
         cookie.setPath("/");
         response.addCookie(cookie);
-        return "redirect:/";
+        return "/redirect-to-neeks-shop";
     }
 }
