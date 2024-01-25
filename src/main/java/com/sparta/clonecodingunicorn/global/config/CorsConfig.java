@@ -18,6 +18,7 @@ public class CorsConfig {
         // 허용할 오리진을 설정
         config.addAllowedOrigin("http://localhost:3001");
         config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("https://clone-coding-unicorn-fe.vercel.app");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.addExposedHeader("*"); //클라이언트가 응답에 접근할 수 있는 header 추가

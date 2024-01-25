@@ -59,6 +59,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // JWT 토큰을 Header에 추가(기존)
 //        jwtUtil.addJwtToHeader(tokenValue, response);
+
         response.getWriter().write(new ObjectMapper().writeValueAsString(loginSuccessResponseDto));
         response.setStatus(200);
     }
